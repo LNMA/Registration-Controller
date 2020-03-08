@@ -43,7 +43,12 @@ public class RegistrationController {
                         throw new RuntimeException("this course is closed now");
                     }
                     else {
-                        this.scheduleDAO.create(this.schedule);
+                        if (!isFirstRegister()){
+                            throw new RuntimeException("you are already register");
+                        }else {
+                            this.scheduleDAO.create(this.schedule);
+
+                        }
                     }
                 }
             }
@@ -67,6 +72,16 @@ public class RegistrationController {
     public boolean isCourseHaveFreeSeat() {
         List<Student> list = this.scheduleDAO.findByIDCourse(course.getId());
         return course.getCapacity() > list.size();
+    }
+
+    public boolean isFirstRegister() {
+        List<Schedule> list = this.scheduleDAO.findByIDCourseAndStudent(this.student, this.course);
+        for (Schedule n : list) {
+            if (n.getIdSchedule() == null) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }
